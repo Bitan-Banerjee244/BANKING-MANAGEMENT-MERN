@@ -14,6 +14,10 @@ export const creditAmount = async (req, res) => {
             return res.status(400).json({ error: "Amount must be greater than 0" });
         }
 
+        if (amount > 18000) {
+            return res.status(400).json({ error: "Amount must not exceed ₹18 Thousand" });
+        }
+
         const user = await User.findOne({ accountNumber: toAccount });
         if (!user) {
             return res.status(404).json({ error: "Recipient account not found" });
@@ -59,6 +63,10 @@ export const debitAmount = async (req, res) => {
             return res.status(400).json({ error: "Amount must be greater than 0" });
         }
 
+        if (amount > 18000) {
+            return res.status(400).json({ error: "Amount must not exceed ₹18 Thousand" });
+
+        }
         const user = await User.findOne({ accountNumber: fromAccount });
         if (!user) {
             return res.status(404).json({ error: "Sender account not found" });
