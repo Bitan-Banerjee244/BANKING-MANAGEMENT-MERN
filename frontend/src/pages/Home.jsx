@@ -38,7 +38,10 @@ function Home() {
           { withCredentials: true }
         );
         // console.log(res.data.transactions);
-        dispatch(setWeeklyData(res.data.transactions));
+        // dispatch(setWeeklyData(res.data.transactions));
+        let Data = {data:res.data.transactions,accountNumber:userData.accountNumber}
+        console.log(userData)
+        dispatch(setWeeklyData(Data));
       } catch (error) {
         console.log(error);
       }

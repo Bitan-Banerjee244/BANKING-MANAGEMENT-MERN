@@ -187,29 +187,33 @@ export const transferMoney = async (req, res) => {
             });
         }
 
-        // Perform balance update
+        // ✅ Deduct and Add
         sender.balance -= amount;
         receiver.balance += amount;
+
         await sender.save();
         await receiver.save();
 
-        // Create transaction
-        const newTransaction = new Transaction({
+        const txnTime = timestamp || Date.now();
+
+        // ✅ Create only ONE transaction for the transfer
+        const transferTransaction = new Transaction({
             type: "transfer",
             amount,
-            toAccount,
             fromAccount,
+            toAccount,
             description: description || "Amount transferred",
-            timestamp: timestamp || new Date(),
+            timestamp: txnTime,
             status: "success",
         });
 
-        const savedTransaction = await newTransaction.save();
+        const savedTxn = await transferTransaction.save();
 
         return res.status(201).json({
             message: "Amount transferred successfully",
-            transaction: savedTransaction,
-            updatedBalance: sender.balance,
+            transaction: savedTxn,
+            updatedSenderBalance: sender.balance,
+            updatedReceiverBalance: receiver.balance,
         });
 
     } catch (error) {

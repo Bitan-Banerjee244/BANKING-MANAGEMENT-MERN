@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
 import axios from "axios";
+import { useContext, useState } from "react";
 import { UserContext } from "../context/userContext";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +18,7 @@ function Transfer() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { BACKEND_URL, isTransferred, setIsTransferred } = useContext(UserContext);
+  const { BACKEND_URL, setIsTransferred } = useContext(UserContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -52,7 +52,6 @@ function Transfer() {
       });
       dispatch(setWeeklyData(weeklyRes.data));
 
-      // ✅ Reset and redirect
       setFormData({
         amount: "",
         fromAccount: "",
@@ -170,10 +169,6 @@ function Transfer() {
         {response && (
           <div className="md:col-span-2 mt-6 bg-green-100 text-green-800 border-l-4 border-green-600 p-4 rounded-lg shadow-sm">
             ✅ {response.message}
-            <br />
-            🏦 Sender Balance: ₹{response.senderBalance}
-            <br />
-            📤 Receiver Balance: ₹{response.receiverBalance}
           </div>
         )}
 

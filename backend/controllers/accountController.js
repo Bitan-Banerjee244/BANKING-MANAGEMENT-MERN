@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs"
 import generateToken from "../utils/token.js";
 import { uploadImage } from "../utils/cloudinary.js";
 import { generateAccountNumber } from "../utils/generateAccountNumber.js";
+import Transaction from "../models/transaction.model.js";
 
 export const createAccount = async (req, res) => {
     try {
@@ -40,13 +41,24 @@ export const createAccount = async (req, res) => {
         let user = await User.create({
             fullName, email, phone, dob, address, gender, initialDeposit, pin: hashPIN, photoUrl: imageURL, accountNumber
         })
-
+        const transaction = new Transaction({
+            type: "credit",
+            amount: initialDeposit,
+            toAccount: accountNumber,
+            description: "Initial Deposit",
+            timestamp: Date.now(),
+            status: "success"
+        });
+        
+        await transaction.save();
         // Returning the response to frontend
         return res.status(201).json({
             success: true,
             message: "User Account Created Successfully !!",
-            user: user
+            user: user,
+            transaction: transaction
         })
+
     } catch (error) {
         console.log(`Creating new account error`, error);
         return res.status(500).json({
@@ -108,7 +120,7 @@ export const loginAccount = async (req, res) => {
             message: "Login successful",
             token: token,
             user: {
-                _id:user._id,
+                _id: user._id,
                 fullName: user.fullName,
                 email: user.email,
                 accountNumber: user.accountNumber,

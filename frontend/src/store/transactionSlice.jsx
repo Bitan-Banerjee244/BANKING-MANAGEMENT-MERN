@@ -11,15 +11,15 @@ const transactionSlice = createSlice({
     onlyLoan: 0,
     onlyTransfer: 0,
     totalSum: 0,
-    weeklyCreditArray: Array(7).fill(0), // Sun to Sat
-    weeklyDebitArray: Array(7).fill(0),  // Sun to Sat
+    weeklyCreditArray: Array(7).fill(0), // Sunday to Saturday
+    weeklyDebitArray: Array(7).fill(0),
   },
   reducers: {
     setWeeklyData: (state, action) => {
-      const data = action.payload || [];
-      state.weeklyData = data;
+      const { data = [], accountNumber } = action.payload;
 
-      // 🔁 Reset all fields
+      // 🔁 Reset all values
+      state.weeklyData = data;
       state.totalCredit = 0;
       state.totalDebit = 0;
       state.onlyCredit = 0;
@@ -30,32 +30,49 @@ const transactionSlice = createSlice({
       state.weeklyCreditArray = Array(7).fill(0);
       state.weeklyDebitArray = Array(7).fill(0);
 
-      data.forEach((element) => {
-        const amount = Number(element.amount || 0);
-        const type = element?.type?.toLowerCase();
-        const date = new Date(element.timestamp);
-        const dayIndex = date.getDay(); 
+      data.forEach((tx) => {
+        const amount = Number(tx.amount || 0);
+        const type = tx?.type?.toLowerCase();
+        const date = new Date(tx.timestamp);
+        const dayIndex = date.getDay(); // 0: Sunday, ..., 6: Saturday
 
         if (type === "credit") {
           state.totalCredit += amount;
           state.onlyCredit += amount;
           state.weeklyCreditArray[dayIndex] += amount;
-        } else if (type === "loan") {
+        }
+
+        else if (type === "loan") {
           state.totalCredit += amount;
           state.onlyLoan += amount;
           state.weeklyCreditArray[dayIndex] += amount;
-        } else if (type === "debit") {
+        }
+
+        else if (type === "debit") {
           state.totalDebit += amount;
           state.onlyDebit += amount;
           state.weeklyDebitArray[dayIndex] += amount;
-        } else if (type === "transfer") {
-          state.totalDebit += amount;
-          state.onlyTransfer += amount;
-          state.weeklyDebitArray[dayIndex] += amount;
         }
 
-        // ✅ Total for valid transaction types
-        if (["credit", "debit", "loan", "transfer"].includes(type)) {
+        else if (type === "transfer") {
+          if (tx.fromAccount === accountNumber) {
+            // 🔻 Outgoing transfer (debit for current user)
+            state.totalDebit += amount;
+            state.onlyTransfer += amount;
+            state.weeklyDebitArray[dayIndex] += amount;
+          } else {
+            // 🔺 Incoming transfer (credit for current user)
+            state.totalCredit += amount;
+            state.onlyCredit += amount;
+            state.weeklyCreditArray[dayIndex] += amount;
+          }
+        }
+
+        // 🧮 Count in total sum only if it's for this user
+        if (
+          (type === "transfer" && (tx.fromAccount === accountNumber || tx.toAccount === accountNumber)) ||
+          ["credit", "debit", "loan"].includes(type)
+        ) {
           state.totalSum += amount;
         }
       });
