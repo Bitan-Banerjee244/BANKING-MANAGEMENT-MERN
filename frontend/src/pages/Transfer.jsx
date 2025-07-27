@@ -1,9 +1,7 @@
 import axios from "axios";
 import { useContext, useState } from "react";
 import { UserContext } from "../context/userContext";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setWeeklyData } from "../store/transactionSlice";
 
 function Transfer() {
   const [formData, setFormData] = useState({
@@ -17,9 +15,7 @@ function Transfer() {
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
   const { BACKEND_URL, setIsTransferred } = useContext(UserContext);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -44,14 +40,7 @@ function Transfer() {
       });
 
       setResponse(res.data);
-      setIsTransferred(prev => !prev);
-
-      // Optional: dispatch weekly data again if needed
-      const weeklyRes = await axios.get(`${BACKEND_URL}/api/v2/weektransaction/${formData.fromAccount}`, {
-        withCredentials: true,
-      });
-      dispatch(setWeeklyData(weeklyRes.data));
-
+      setIsTransferred((prev) => !prev);
       setFormData({
         amount: "",
         fromAccount: "",
@@ -59,7 +48,6 @@ function Transfer() {
         pin: "",
         description: "",
       });
-
       navigate("/home");
     } catch (err) {
       setError(err.response?.data?.error || "An unexpected error occurred.");
@@ -69,18 +57,20 @@ function Transfer() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-green-100 via-white to-blue-100 flex items-center justify-center p-6">
+    <div
+      className="w-full h-screen bg-gradient-to-br from-green-100 via-white to-blue-100 flex items-center justify-center p-6 overflow-y-auto"
+    >
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-4xl bg-white bg-opacity-80 rounded-3xl shadow-xl p-8 md:p-12 grid grid-cols-1 md:grid-cols-2 gap-6"
       >
         <h2 className="md:col-span-2 text-3xl md:text-4xl font-bold text-green-700 text-center mb-6">
-          Transfer Money
+          Transfer Amount
         </h2>
 
         {/* From Account */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">From Account</label>
+          <label className="block font-medium text-gray-700 mb-1">From Account*</label>
           <input
             type="text"
             name="fromAccount"
@@ -94,7 +84,7 @@ function Transfer() {
 
         {/* To Account */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">To Account</label>
+          <label className="block font-medium text-gray-700 mb-1">To Account*</label>
           <input
             type="text"
             name="toAccount"
@@ -108,7 +98,7 @@ function Transfer() {
 
         {/* Amount */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Amount (₹)</label>
+          <label className="block font-medium text-gray-700 mb-1">Amount (₹)*</label>
           <input
             type="number"
             name="amount"
@@ -124,7 +114,7 @@ function Transfer() {
 
         {/* PIN */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">PIN (4-6 digits)</label>
+          <label className="block font-medium text-gray-700 mb-1">PIN*</label>
           <input
             type="password"
             name="pin"
@@ -160,7 +150,7 @@ function Transfer() {
             {loading ? (
               <span className="loading loading-spinner text-secondary"></span>
             ) : (
-              "💸 Transfer Now"
+              "Transfer Amount"
             )}
           </button>
         </div>

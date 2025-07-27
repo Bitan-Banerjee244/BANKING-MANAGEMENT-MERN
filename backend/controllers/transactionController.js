@@ -120,8 +120,6 @@ export const loanAmount = async (req, res) => {
             return res.status(404).json({ error: "User account not found" });
         }
 
-
-
         const isValidPin = await bcrypt.compare(pin, user.pin);
         if (!isValidPin) {
             return res.status(401).json({ error: "Incorrect PIN" });
@@ -187,7 +185,7 @@ export const transferMoney = async (req, res) => {
             });
         }
 
-        // ✅ Deduct and Add
+        // Deduct and Add
         sender.balance -= amount;
         receiver.balance += amount;
 
@@ -196,7 +194,7 @@ export const transferMoney = async (req, res) => {
 
         const txnTime = timestamp || Date.now();
 
-        // ✅ Create only ONE transaction for the transfer
+        // Create only ONE transaction for the transfer
         const transferTransaction = new Transaction({
             type: "transfer",
             amount,
@@ -237,7 +235,6 @@ export const getLast7DaysTransactionsByUserId = async (req, res) => {
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-        // Step 3: Find transactions where this user is involved
         const transactions = await Transaction.find({
             $or: [
                 { fromAccount: accountNumber },

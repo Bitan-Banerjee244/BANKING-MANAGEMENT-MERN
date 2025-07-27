@@ -1,14 +1,15 @@
 import User from "../models/userAccount.models.js";
 import bcrypt from "bcryptjs"
 import generateToken from "../utils/token.js";
+import Transaction from "../models/transaction.model.js";
 import { uploadImage } from "../utils/cloudinary.js";
 import { generateAccountNumber } from "../utils/generateAccountNumber.js";
-import Transaction from "../models/transaction.model.js";
 
 export const createAccount = async (req, res) => {
     try {
         let { fullName, email, phone, dob, address, gender, initialDeposit, pin } = req.body
 
+        // All felids are required
         if (!fullName || !email || !phone || !dob || !address || !gender || !initialDeposit || !pin) {
             return res.status(400).json({
                 success: false,

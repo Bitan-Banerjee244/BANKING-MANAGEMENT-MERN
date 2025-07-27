@@ -43,14 +43,14 @@ function Login() {
       <div className="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8">
         {/* Heading */}
         <h2 className="text-2xl font-bold text-center mb-6 text-blue-900">
-          Banking Login
+          Login In your Account
         </h2>
 
         <form className="space-y-5" onSubmit={handleLogin}>
           {/* Username Input */}
           <div>
             <label className="block text-sm font-semibold text-gray-600 mb-1">
-              Email
+              Email*
             </label>
             <input
               type="text"
@@ -63,7 +63,7 @@ function Login() {
           {/* Password Input */}
           <div>
             <label className="block text-sm font-semibold text-gray-600 mb-1">
-              PIN
+              PIN*
             </label>
             <div className="relative">
               <input

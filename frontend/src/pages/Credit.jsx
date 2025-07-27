@@ -1,11 +1,10 @@
-import { useContext, useState } from "react";
 import axios from "axios";
+import { useContext, useState } from "react";
 import { UserContext } from "../context/userContext";
-
 import { useNavigate } from "react-router-dom";
 
-
 function Credit() {
+  // Getting Data Via name attribute and fromData
   const [formData, setFormData] = useState({
     amount: "",
     toAccount: "",
@@ -15,10 +14,11 @@ function Credit() {
 
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
-  let { BACKEND_URL,setIsCredited } = useContext(UserContext);
+  let { BACKEND_URL, setIsCredited } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
-  let navigate = useNavigate()
+  let navigate = useNavigate();
 
+  // Getting The data using name attribute technique
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -30,19 +30,21 @@ function Credit() {
     setResponse(null);
 
     try {
+      // The Data
       const payload = {
         ...formData,
         amount: parseFloat(formData.amount), // ✅ Convert amount to number
         timestamp: new Date(),
       };
 
+      // Sending to backend Via axios 
       const res = await axios.post(`${BACKEND_URL}/api/v2/credit`, payload, {
         withCredentials: true,
       });
-      setIsCredited(prev=>!prev)
+      setIsCredited((prev) => !prev);
       setResponse(res.data);
       setFormData({ amount: "", toAccount: "", description: "", pin: "" });
-      navigate("/home")
+      navigate("/home");
     } catch (err) {
       setError(err.response?.data?.error || "An unexpected error occurred.");
     } finally {
@@ -62,7 +64,9 @@ function Credit() {
 
         {/* Amount */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Amount (₹)</label>
+          <label className="block font-medium text-gray-700 mb-1">
+            Amount (₹)*
+          </label>
           <input
             type="number"
             name="amount"
@@ -78,7 +82,9 @@ function Credit() {
 
         {/* To Account */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Recipient Account</label>
+          <label className="block font-medium text-gray-700 mb-1">
+            Recipient Account*
+          </label>
           <input
             type="text"
             name="toAccount"
@@ -92,7 +98,9 @@ function Credit() {
 
         {/* Description */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Description</label>
+          <label className="block font-medium text-gray-700 mb-1">
+            Description
+          </label>
           <input
             type="text"
             name="description"
@@ -105,7 +113,9 @@ function Credit() {
 
         {/* PIN */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">4-Digit PIN</label>
+          <label className="block font-medium text-gray-700 mb-1">
+            4-Digit PIN*
+          </label>
           <input
             type="password"
             name="pin"
@@ -128,7 +138,7 @@ function Credit() {
             {loading ? (
               <span className="loading loading-spinner text-secondary"></span>
             ) : (
-              "💳 Credit Now"
+              "Credit Now"
             )}
           </button>
         </div>

@@ -128,14 +128,14 @@ function Register() {
 
           <p className="mt-4 text-blue-800 text-lg font-semibold">Your Photo</p>
           <p className="text-blue-600 text-xs text-center mt-1">
-            Click the circle above to upload
+            Click the circle above to upload *
           </p>
         </div>
 
         {/* Form Section */}
         <div className="w-full md:w-1/2 p-6">
           <h2 className="text-3xl font-bold text-center text-purple-800 mb-6">
-            Create Bank Account
+            Create Savings Account
           </h2>
           <form
             className="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -148,7 +148,7 @@ function Register() {
                 htmlFor="fullName"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Full Name
+                Full Name*
               </label>
               <input
                 type="text"
@@ -168,7 +168,7 @@ function Register() {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Email
+                Email*
               </label>
               <input
                 type="email"
@@ -188,7 +188,7 @@ function Register() {
                 htmlFor="phone"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Phone
+                Phone*
               </label>
               <input
                 type="tel"
@@ -208,7 +208,7 @@ function Register() {
                 htmlFor="dob"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Date of Birth
+                Date of Birth*
               </label>
               <input
                 type="date"
@@ -227,7 +227,7 @@ function Register() {
                 htmlFor="address"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Address
+                Address*
               </label>
               <textarea
                 id="address"
@@ -247,7 +247,7 @@ function Register() {
                 htmlFor="gender"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Gender
+                Gender*
               </label>
               <select
                 id="gender"
@@ -258,7 +258,7 @@ function Register() {
                 onChange={(e) => setGender(e.target.value)}
               >
                 <option disabled value="">
-                  Pick a gender
+                  Pick a gender*
                 </option>
                 <option>male</option>
                 <option>female</option>
@@ -272,7 +272,7 @@ function Register() {
                 htmlFor="initialDeposit"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Initial Deposit
+                Initial Deposit*
               </label>
               <input
                 type="number"
@@ -293,7 +293,7 @@ function Register() {
                 htmlFor="pin"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                PIN
+                PIN*
               </label>
               <input
                 type="password"

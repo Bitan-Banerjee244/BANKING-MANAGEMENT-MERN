@@ -13,6 +13,7 @@ import Credit from "./Credit";
 import Debit from "./Debit";
 import Loan from "./Loan";
 import Transfer from "./Transfer";
+import UpdateAccount from "./UpdateAccount";
 
 function Home() {
   let userData = useSelector((store) => store.user.currentUser);
@@ -99,6 +100,7 @@ function Home() {
           {/* Main home layout with child routes */}
           <Route index element={<Dashboard />} />
           <Route path="credit" element={<Credit />} />
+          <Route path="update" element={<UpdateAccount />} />
           <Route path="debit" element={<Debit />} />
           <Route path="loan" element={<Loan />} />
           <Route path="transfer" element={<Transfer />} />

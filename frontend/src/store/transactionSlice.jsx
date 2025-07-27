@@ -13,12 +13,14 @@ const transactionSlice = createSlice({
     totalSum: 0,
     weeklyCreditArray: Array(7).fill(0), // Sunday to Saturday
     weeklyDebitArray: Array(7).fill(0),
+    last7CreditArray: [],
+    last7DebitArray: [],
   },
   reducers: {
     setWeeklyData: (state, action) => {
       const { data = [], accountNumber } = action.payload;
 
-      // 🔁 Reset all values
+      // Reset state
       state.weeklyData = data;
       state.totalCredit = 0;
       state.totalDebit = 0;
@@ -29,6 +31,11 @@ const transactionSlice = createSlice({
       state.totalSum = 0;
       state.weeklyCreditArray = Array(7).fill(0);
       state.weeklyDebitArray = Array(7).fill(0);
+      state.last7CreditArray = [];
+      state.last7DebitArray = [];
+
+      const creditTxs = [];
+      const debitTxs = [];
 
       data.forEach((tx) => {
         const amount = Number(tx.amount || 0);
@@ -40,35 +47,40 @@ const transactionSlice = createSlice({
           state.totalCredit += amount;
           state.onlyCredit += amount;
           state.weeklyCreditArray[dayIndex] += amount;
-        }
-
+          creditTxs.push({ amount, timestamp: tx.timestamp });
+        } 
+        
         else if (type === "loan") {
           state.totalCredit += amount;
           state.onlyLoan += amount;
           state.weeklyCreditArray[dayIndex] += amount;
-        }
-
+          creditTxs.push({ amount, timestamp: tx.timestamp });
+        } 
+        
         else if (type === "debit") {
           state.totalDebit += amount;
           state.onlyDebit += amount;
           state.weeklyDebitArray[dayIndex] += amount;
-        }
-
+          debitTxs.push({ amount, timestamp: tx.timestamp });
+        } 
+        
         else if (type === "transfer") {
           if (tx.fromAccount === accountNumber) {
-            // 🔻 Outgoing transfer (debit for current user)
+            // Outgoing transfer (debit)
             state.totalDebit += amount;
             state.onlyTransfer += amount;
             state.weeklyDebitArray[dayIndex] += amount;
+            debitTxs.push({ amount, timestamp: tx.timestamp });
           } else {
-            // 🔺 Incoming transfer (credit for current user)
+            // Incoming transfer (credit)
             state.totalCredit += amount;
             state.onlyCredit += amount;
             state.weeklyCreditArray[dayIndex] += amount;
+            creditTxs.push({ amount, timestamp: tx.timestamp });
           }
         }
 
-        // 🧮 Count in total sum only if it's for this user
+        // Add to totalSum if relevant
         if (
           (type === "transfer" && (tx.fromAccount === accountNumber || tx.toAccount === accountNumber)) ||
           ["credit", "debit", "loan"].includes(type)
@@ -76,6 +88,18 @@ const transactionSlice = createSlice({
           state.totalSum += amount;
         }
       });
+
+      // Sort and extract last 7 individual credit entries (latest first)
+      state.last7CreditArray = creditTxs
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .slice(0, 7)
+        .map((tx) => tx.amount);
+
+      // Same for last 7 debit entries
+      state.last7DebitArray = debitTxs
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .slice(0, 7)
+        .map((tx) => tx.amount);
     },
   },
 });
