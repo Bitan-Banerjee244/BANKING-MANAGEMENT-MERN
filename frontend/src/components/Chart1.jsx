@@ -1,5 +1,7 @@
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 // Helper function for chart data
@@ -33,12 +35,38 @@ const LegendBox = ({ label, value, color, amount }) => (
 );
 
 const Chart1 = () => {
+  let { onlyCredit, onlyDebit, onlyLoan, onlyTransfer, totalSum } = useSelector(
+    (store) => store.tran
+  );
+
+  
   const charts = [
-    { label: "Credit Amount", value: 25, color: "#22c55e", amount: 5412 },
-    { label: "Debit Amount", value: 20, color: "#ef4444", amount: 3784 },
-    { label: "Loan Amount", value: 15, color: "#6366f1", amount: 2784 },
-    { label: "Transfer Amount", value: 40, color: "#ec4899", amount: 6784 },
-  ];
+  {
+    label: "Credit Amount",
+    value: Number(((onlyCredit / totalSum) * 100).toFixed(2)),
+    color: "#22c55e",
+    amount: onlyCredit,
+  },
+  {
+    label: "Debit Amount",
+    value: Number(((onlyDebit / totalSum) * 100).toFixed(2)),
+    color: "#ef4444",
+    amount: onlyDebit,
+  },
+  {
+    label: "Loan Amount",
+    value: Number(((onlyLoan / totalSum) * 100).toFixed(2)),
+    color: "#6366f1",
+    amount: onlyLoan,
+  },
+  {
+    label: "Transfer Amount",
+    value: Number(((onlyTransfer / totalSum) * 100).toFixed(2)),
+    color: "#ec4899",
+    amount: onlyTransfer,
+  },
+];
+
 
   return (
     <main className="flex-1 px-3 overflow-y-auto">

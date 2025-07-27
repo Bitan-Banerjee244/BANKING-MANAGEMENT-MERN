@@ -1,67 +1,64 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// 🔁 Format to YYYY-MM-DD
-const formatDate = (d) => d.toISOString().split("T")[0];
-
-// ✅ Get LAST 7 DAYS from today (including today), skipping future dates
-function getLast7ActualDates() {
-  const today = new Date();
-  const dates = [];
-
-  for (let i = 6; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(today.getDate() - i);
-    const iso = formatDate(date);
-    const label = date.toLocaleDateString("en-US", { weekday: "short" }); // e.g., "Sun"
-    dates.push({ date: iso, label });
-  }
-
-  return dates;
-}
-
-// ✅ Generate clean 7-day stats
-function getClean7DayStats(transactions = []) {
-  const last7Days = getLast7ActualDates();
-
-  // 🔹 Prepare zero-filled map
-  const result = {};
-  last7Days.forEach(({ date, label }) => {
-    result[date] = {
-      date,
-      label,
-      credit: 0,
-      debit: 0,
-      loan: 0,
-      transfer: 0,
-    };
-  });
-
-  // 🔍 Filter and process valid transactions
-  for (let txn of transactions) {
-    const rawDate = txn?.createdAt;
-    const type = txn?.type?.toLowerCase();
-    const amount = Number(txn?.amount || 0);
-    if (!rawDate || !type || !["credit", "debit", "loan", "transfer"].includes(type)) continue;
-
-    const txnDate = formatDate(new Date(rawDate));
-    if (!result[txnDate]) continue; // ignore if not within last 7 days
-
-    result[txnDate][type] += amount;
-  }
-
-  return last7Days.map(({ date }) => result[date]);
-}
 const transactionSlice = createSlice({
   name: "transaction",
   initialState: {
-    weeklyData: [], // raw transactions
-    last7DaysStats: [], // processed results
+    weeklyData: [],
+    totalCredit: 0,
+    totalDebit: 0,
+    onlyCredit: 0,
+    onlyDebit: 0,
+    onlyLoan: 0,
+    onlyTransfer: 0,
+    totalSum: 0,
+    weeklyCreditArray: Array(7).fill(0), // Sun to Sat
+    weeklyDebitArray: Array(7).fill(0),  // Sun to Sat
   },
   reducers: {
     setWeeklyData: (state, action) => {
       const data = action.payload || [];
       state.weeklyData = data;
-      state.last7DaysStats = getClean7DayStats(data);
+
+      // 🔁 Reset all fields
+      state.totalCredit = 0;
+      state.totalDebit = 0;
+      state.onlyCredit = 0;
+      state.onlyDebit = 0;
+      state.onlyLoan = 0;
+      state.onlyTransfer = 0;
+      state.totalSum = 0;
+      state.weeklyCreditArray = Array(7).fill(0);
+      state.weeklyDebitArray = Array(7).fill(0);
+
+      data.forEach((element) => {
+        const amount = Number(element.amount || 0);
+        const type = element?.type?.toLowerCase();
+        const date = new Date(element.timestamp);
+        const dayIndex = date.getDay(); 
+
+        if (type === "credit") {
+          state.totalCredit += amount;
+          state.onlyCredit += amount;
+          state.weeklyCreditArray[dayIndex] += amount;
+        } else if (type === "loan") {
+          state.totalCredit += amount;
+          state.onlyLoan += amount;
+          state.weeklyCreditArray[dayIndex] += amount;
+        } else if (type === "debit") {
+          state.totalDebit += amount;
+          state.onlyDebit += amount;
+          state.weeklyDebitArray[dayIndex] += amount;
+        } else if (type === "transfer") {
+          state.totalDebit += amount;
+          state.onlyTransfer += amount;
+          state.weeklyDebitArray[dayIndex] += amount;
+        }
+
+        // ✅ Total for valid transaction types
+        if (["credit", "debit", "loan", "transfer"].includes(type)) {
+          state.totalSum += amount;
+        }
+      });
     },
   },
 });

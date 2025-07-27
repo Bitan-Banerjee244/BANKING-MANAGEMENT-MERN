@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom"; // ✅ Added useLocation
 import axios from "axios";
 import {
   FaTachometerAlt,
@@ -17,47 +18,62 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCurrentUser } from "../store/userSlice";
 
 const Sidebar = () => {
-  // const [isOpen, setIsOpen] = useState(true);
-  let { isOpen, setIsOpen, BACKEND_URL } = useContext(UserContext);
-  let currentUser = useSelector((store) => store.user.currentUser);
-  let dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState("Dashboard");
+  const navigate = useNavigate();
+  const location = useLocation(); // ✅ Get current location
+  const { isOpen, setIsOpen, BACKEND_URL } = useContext(UserContext);
+  const currentUser = useSelector((store) => store.user.currentUser);
+  const dispatch = useDispatch();
+
+  // ✅ Automatically update active tab based on route
+  const getLabelFromPath = (path) => {
+    if (path === "/home") return "Dashboard";
+    if (path.includes("update")) return "Update Profile";
+    if (path.includes("credit")) return "Credit Amount";
+    if (path.includes("debit")) return "Debit Amount";
+    if (path.includes("transfer")) return "Transfer Amount";
+    if (path.includes("loan")) return "Take Loan";
+    return "";
+  };
+
+  const [activeTab, setActiveTab] = useState(getLabelFromPath(location.pathname));
+
+  useEffect(() => {
+    setActiveTab(getLabelFromPath(location.pathname));
+  }, [location.pathname]);
 
   const toggleSidebar = () => {
     setIsOpen((prev) => !prev);
   };
 
   const menuItems = [
-    { icon: <FaTachometerAlt />, label: "Dashboard" },
-    { icon: <FaUserEdit />, label: "Update Profile" },
-    { icon: <FaArrowDown />, label: "Credit Amount" },
-    { icon: <FaArrowUp />, label: "Debit Amount" },
-    { icon: <FaExchangeAlt />, label: "Transfer Amount" },
-    { icon: <FaHandHoldingUsd />, label: "Take Loan" },
+    { icon: <FaTachometerAlt />, label: "Dashboard", path: "/home" },
+    { icon: <FaUserEdit />, label: "Update Profile", path: "/home/update" },
+    { icon: <FaArrowDown />, label: "Credit Amount", path: "/home/credit" },
+    { icon: <FaArrowUp />, label: "Debit Amount", path: "/home/debit" },
+    { icon: <FaExchangeAlt />, label: "Transfer Amount", path: "/home/transfer" },
+    { icon: <FaHandHoldingUsd />, label: "Take Loan", path: "/home/loan" },
   ];
 
   const handleLogout = async () => {
     try {
       const res = await axios.post(
         `${BACKEND_URL}/api/v2/logout`,
-        {}, // body is empty
-        { withCredentials: true } // proper placement
+        {},
+        { withCredentials: true }
       );
-      // console.log("Logout Success:", res.data.message);
       toast.success(res.data.message);
       dispatch(setCurrentUser(null));
+      navigate("/login");
     } catch (error) {
-      console.error("Logout Error:", error.response?.data || error.message);
+      toast.error("Logout failed!");
       dispatch(setCurrentUser(null));
+      navigate("/login");
     }
   };
 
-  useEffect(() => {
-    console.log(currentUser);
-  }, []);
   return (
     <>
-      {/* Toggle Button - Mobile Only */}
+      {/* Mobile Toggle Button */}
       <div className="absolute top-4 left-4 z-50 md:hidden">
         <button
           onClick={toggleSidebar}
@@ -67,9 +83,9 @@ const Sidebar = () => {
         </button>
       </div>
 
-      {/* Sidebar */}
+      {/* Sidebar Panel */}
       <aside
-        className={`fixed md:relative top-0 left-0 h-full md:h-screen w-[320px] bg-gradient-to-b from-emerald-100 via-blue-50 to-blue-100 border-r border-gray-200 z-40 shadow-lg transform ${
+        className={`fixed md:relative top-0 left-0 h-full w-[320px] bg-gradient-to-b from-emerald-100 via-blue-50 to-blue-100 border-r border-gray-200 z-40 shadow-lg transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 ease-in-out md:translate-x-0 flex flex-col justify-between`}
       >
@@ -91,21 +107,21 @@ const Sidebar = () => {
             </p>
           </div>
 
-          {/* Menu List */}
+          {/* Menu */}
           <div className="px-6 pb-6 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-blue-300">
-            {menuItems.map(({ icon, label }) => (
+            {menuItems.map(({ icon, label, path }) => (
               <SidebarButton
                 key={label}
                 icon={icon}
                 label={label}
                 active={activeTab === label}
-                onClick={() => setActiveTab(label)}
+                onClick={() => navigate(path)}
               />
             ))}
           </div>
         </div>
 
-        {/* Logout Button - Bottom */}
+        {/* Logout */}
         <div className="p-6">
           <button
             className="flex items-center gap-3 w-full px-5 py-3 bg-red-500 text-white rounded-xl shadow-md hover:bg-red-600 transition font-semibold text-sm"
@@ -120,7 +136,6 @@ const Sidebar = () => {
   );
 };
 
-// Sidebar Button Component
 function SidebarButton({ icon, label, active, onClick }) {
   return (
     <button
