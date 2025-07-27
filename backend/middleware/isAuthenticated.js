@@ -1,4 +1,6 @@
 import jwt from "jsonwebtoken";
+
+// Check user Is authenticated or not
 const isAuthenticated = async (req, res, next) => {
   try {
     let token = req.cookies.token;

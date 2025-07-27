@@ -12,9 +12,9 @@ const getTypeBadge = (type) => {
     case "debit":
       return `${base} bg-red-200 text-red-800`;
     case "loan":
-      return `${base} bg-indigo-200 text-indigo-800`; // Changed to indigo
+      return `${base} bg-indigo-200 text-indigo-800`; 
     case "transfer":
-      return `${base} bg-amber-200 text-amber-800`;   // Changed to amber
+      return `${base} bg-amber-200 text-amber-800`;  
     default:
       return `${base} bg-gray-200 text-gray-800`;
   }
@@ -25,6 +25,7 @@ function Table() {
   const transactions = useSelector((store) => store.tran.weeklyData) || [];
   const userData = useSelector((store) => store.user.currentUserData) || [];
 
+  // Uploading data into excel sheet
   const exportToExcel = () => {
     const exportData = transactions.map((txn) => ({
       Type: txn.type,

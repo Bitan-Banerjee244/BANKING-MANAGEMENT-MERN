@@ -59,6 +59,7 @@ function UpdateAccount() {
 
       setIsCredited((prev) => !prev);
       toast.success("Account updated successfully");
+      alert("Your account Updated Successfully! Re-login to see Updated Account")
       navigate("/home");
     } catch (err) {
       toast.error("Update failed");

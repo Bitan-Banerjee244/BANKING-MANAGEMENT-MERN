@@ -15,8 +15,6 @@ export const uploadImage = async (localFilePath) => {
             folder: "bankProfilePictures",
             resource_type: "image",
         });
-
-        // console.log("✅ Upload success:", uploadResult.secure_url);
         // console.log(localFilePath)
         await fs.unlinkSync(localFilePath);
         return uploadResult.secure_url;

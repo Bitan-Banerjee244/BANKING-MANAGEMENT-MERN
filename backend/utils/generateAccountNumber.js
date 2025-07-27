@@ -1,3 +1,4 @@
+// Generate account number for each user when register
 export const generateAccountNumber = () => {
     const prefix = 'AC';
     const timestamp = Date.now();

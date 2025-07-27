@@ -67,7 +67,7 @@ function Debit() {
 
         {/* Amount */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Amount (₹)</label>
+          <label className="block font-medium text-gray-700 mb-1">Amount (₹)*</label>
           <input
             type="number"
             name="amount"
@@ -83,7 +83,7 @@ function Debit() {
 
         {/* From Account */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Your Account</label>
+          <label className="block font-medium text-gray-700 mb-1">Your Account*</label>
           <input
             type="text"
             name="fromAccount"
@@ -110,7 +110,7 @@ function Debit() {
 
         {/* PIN */}
         <div>
-          <label className="block font-medium text-gray-700 mb-1">4-Digit PIN</label>
+          <label className="block font-medium text-gray-700 mb-1">4-Digit PIN*</label>
           <input
             type="password"
             name="pin"

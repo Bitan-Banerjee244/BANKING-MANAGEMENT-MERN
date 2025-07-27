@@ -11,7 +11,7 @@ const transactionSlice = createSlice({
     onlyLoan: 0,
     onlyTransfer: 0,
     totalSum: 0,
-    weeklyCreditArray: Array(7).fill(0), // Sunday to Saturday
+    weeklyCreditArray: Array(7).fill(0),
     weeklyDebitArray: Array(7).fill(0),
     last7CreditArray: [],
     last7DebitArray: [],
@@ -41,7 +41,7 @@ const transactionSlice = createSlice({
         const amount = Number(tx.amount || 0);
         const type = tx?.type?.toLowerCase();
         const date = new Date(tx.timestamp);
-        const dayIndex = date.getDay(); // 0: Sunday, ..., 6: Saturday
+        const dayIndex = date.getDay(); 
 
         if (type === "credit") {
           state.totalCredit += amount;
